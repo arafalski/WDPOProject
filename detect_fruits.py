@@ -23,8 +23,8 @@ def detect_fruits(img_path: str) -> Dict[str, int]:
     """
     img = cv2.imread(img_path, cv2.IMREAD_COLOR)
 
-    #TODO: Implement detection method.
-    
+    # TODO: Implement detection method.
+
     apple = 0
     banana = 0
     orange = 0
@@ -47,7 +47,7 @@ def main(data_path, output_file_path):
         filename = img_path.split('/')[-1]
 
         results[filename] = fruits
-    
+
     with open(output_file_path, 'w') as ofp:
         json.dump(results, ofp)
 
