@@ -25,17 +25,20 @@ mask3 = cv2.inRange(img_hsv, lower3, upper3)
 mask = mask1 / 255 + mask2 / 255 + mask3 / 255
 mask[mask != 0] = 255
 
-mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((65, 65), np.uint8))
-
-img_color = img.copy()
-B, G, R = img_color[:, :, 0], img_color[:, :, 1], img_color[:, :, 2]
-B[mask == 0] = 0
-G[mask == 0] = 0
-R[mask == 0] = 0
+mask = cv2.morphologyEx(mask.astype(np.uint8),
+                        cv2.MORPH_CLOSE, np.ones((65, 65), np.uint8))
 
 H = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 0]
 S = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 1]
 V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
+
+contours, hierarchy = cv2.findContours(mask.copy(),
+                                       cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_SIMPLE)
+print(f'Numbers of objects: {len(contours)}')
+
+img_color = img.copy()
+cv2.drawContours(img_color, contours, -1, (0, 255, 0), 8)
 
 fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
 ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
