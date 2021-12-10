@@ -39,7 +39,7 @@ def classify(h, s):
     return 'apple'
 
 
-img = cv2.imread('data/00.jpg', cv2.IMREAD_COLOR)
+img = cv2.imread('data/09.jpg', cv2.IMREAD_COLOR)
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
@@ -72,12 +72,19 @@ print(f'Num of objects: {len(contours)}')
 img_color = img.copy()
 rects = get_rects(contours)
 fruits = []
-for r in rects:
+for (r, c) in zip(rects, contours):
     img_rect = img_color[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
-    mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
-    get_mean_color(img_rect, mask_rect)
+    img_rect_copy = img_rect.copy()
 
-    img_rect_hsv = cv2.cvtColor(img_rect, cv2.COLOR_BGR2HSV)
+    for y in range(img_rect_copy.shape[0]):
+        for x in range(img_rect_copy.shape[1]):
+            if cv2.pointPolygonTest(c, (x + int(r[0][0]), y + int(r[0][1])), False) == -1:
+                img_rect_copy[y, x] = 0
+
+    mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
+    get_mean_color(img_rect_copy, mask_rect)
+
+    img_rect_hsv = cv2.cvtColor(img_rect_copy, cv2.COLOR_BGR2HSV)
     H = int(np.mean(img_rect_hsv[:, :, 0]))
     S = int(np.mean(img_rect_hsv[:, :, 1]))
     fruits.append(classify(H, S))
@@ -95,8 +102,8 @@ fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
 ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 ax11.set_title('Oryginalne zdjęcie')
 
-ax12.imshow(cv2.cvtColor(img_color, cv2.COLOR_BGR2RGB))
-ax12.set_title('Zdjęcie po przejściach')
+# ax12.imshow(cv2.cvtColor(img_color, cv2.COLOR_BGR2RGB))
+# ax12.set_title('Zdjęcie po przejściach')
 
 fig1.tight_layout()
 
