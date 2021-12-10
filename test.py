@@ -1,6 +1,13 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from enum import Enum
+
+
+class Fruit(Enum):
+    apple = 1
+    banana = 2
+    orange = 3
 
 
 def generate_mask(img_hsv):
@@ -60,12 +67,12 @@ def get_mean_color(img, mask):
 
 def classify(h, s):
     if h > 20 and h < 120:
-        return 'banana'
+        return Fruit.banana
 
     if s > 190:
-        return 'orange'
+        return Fruit.orange
 
-    return 'apple'
+    return Fruit.apple
 
 
 img = cv2.imread('data/02.jpg', cv2.IMREAD_COLOR)
@@ -105,8 +112,9 @@ for (r, c) in zip(rects, contours):
     print(classify(H, S))
     print()
 
-fruits.sort()
-print(f'Fruits: {fruits}')
+print(f'Num of apples: {fruits.count(Fruit.apple)}')
+print(f'Num of oranges: {fruits.count(Fruit.orange)}')
+print(f'Num of bananas: {fruits.count(Fruit.banana)}')
 ################################################################
 # images plotting
 fig1, ax1 = plt.subplots()
