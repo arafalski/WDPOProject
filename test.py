@@ -35,16 +35,42 @@ R[mask == 0] = 0
 
 H = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 0]
 S = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
+V = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 2]
 
-fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3, figsize=(16, 8))
-ax1.imshow(cv2.cvtColor(img_blur, cv2.COLOR_BGR2RGB))
+fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
+ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+ax11.set_title('Oryginalne zdjęcie')
 
-ax2.imshow(mask, cmap='gray')
-ax3.imshow(cv2.cvtColor(img_color, cv2.COLOR_BGR2RGB))
+ax12.imshow(cv2.cvtColor(img_color, cv2.COLOR_BGR2RGB))
+ax12.set_title('Zdjęcie po przejściach')
 
-ax5.imshow(H, cmap='gray')
-ax6.imshow(S, cmap='gray')
+fig1.tight_layout()
 
-fig.tight_layout()
+
+fig2, ((ax21, ax22, ax23),
+       (ax24, ax25, ax26)) = plt.subplots(2, 3, figsize=(16, 8))
+
+ax21.imshow(mask1, cmap='gray')
+ax21.set_title('Maska - banany / pomarańcze')
+
+ax22.imshow(mask2, cmap='gray')
+ax22.set_title('Maska - jabłka')
+
+ax23.imshow(mask3, cmap='gray')
+ax23.set_title('Maska - refleksy')
+
+ax24.imshow(mask, cmap='gray')
+ax24.set_title('Suma masek')
+
+fig2.tight_layout()
+
+
+fig2, (axh, axs, axv) = plt.subplots(1, 3, figsize=(14, 4))
+axh.imshow(H, cmap='gray')
+axh.set_title('Kanał H')
+axs.imshow(S, cmap='gray')
+axs.set_title('Kanał S')
+axv.imshow(V, cmap='gray')
+axv.set_title('Kanał V')
 
 plt.show()
