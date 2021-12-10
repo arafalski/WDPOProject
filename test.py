@@ -33,9 +33,9 @@ B[mask == 0] = 0
 G[mask == 0] = 0
 R[mask == 0] = 0
 
-H = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 0]
-S = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
-V = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 2]
+H = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 0]
+S = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 1]
+V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
 
 fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
 ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
