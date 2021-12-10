@@ -29,7 +29,17 @@ def get_mean_color(img, mask):
     img[:, :] = np.array([B_mean, G_mean, R_mean])
 
 
-img = cv2.imread('data/02.jpg', cv2.IMREAD_COLOR)
+def classify(h, s):
+    if h > 20 and h < 120:
+        return 'banana'
+
+    if s > 190:
+        return 'orange'
+
+    return 'apple'
+
+
+img = cv2.imread('data/00.jpg', cv2.IMREAD_COLOR)
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
@@ -61,7 +71,7 @@ print(f'Num of objects: {len(contours)}')
 
 img_color = img.copy()
 rects = get_rects(contours)
-hs_for_classification = []
+fruits = []
 for r in rects:
     img_rect = img_color[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
     mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
@@ -70,12 +80,15 @@ for r in rects:
     img_rect_hsv = cv2.cvtColor(img_rect, cv2.COLOR_BGR2HSV)
     H = int(np.mean(img_rect_hsv[:, :, 0]))
     S = int(np.mean(img_rect_hsv[:, :, 1]))
-    hs_for_classification.append((H, S))
+    fruits.append(classify(H, S))
     print(f'xmin = {r[0][0]}')
     print(f'H = {H}')
     print(f'S = {S}')
+    print(classify(H, S))
     print()
 
+fruits.sort()
+print(f'Fruits: {fruits}')
 ################################################################
 # images plotting
 fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
@@ -88,36 +101,36 @@ ax12.set_title('Zdjęcie po przejściach')
 fig1.tight_layout()
 
 
-fig2, ((ax21, ax22, ax23),
-       (ax24, ax25, ax26)) = plt.subplots(2, 3, figsize=(16, 8))
+# fig2, ((ax21, ax22, ax23),
+#        (ax24, ax25, ax26)) = plt.subplots(2, 3, figsize=(16, 8))
 
-ax21.imshow(mask1, cmap='gray')
-ax21.set_title('Maska - banany / pomarańcze')
+# ax21.imshow(mask1, cmap='gray')
+# ax21.set_title('Maska - banany / pomarańcze')
 
-ax22.imshow(mask2, cmap='gray')
-ax22.set_title('Maska - jabłka')
+# ax22.imshow(mask2, cmap='gray')
+# ax22.set_title('Maska - jabłka')
 
-ax23.imshow(mask3, cmap='gray')
-ax23.set_title('Maska - refleksy')
+# ax23.imshow(mask3, cmap='gray')
+# ax23.set_title('Maska - refleksy')
 
-ax24.imshow(mask, cmap='gray')
-ax24.set_title('Suma masek')
+# ax24.imshow(mask, cmap='gray')
+# ax24.set_title('Suma masek')
 
-fig2.tight_layout()
+# fig2.tight_layout()
 
 
-H = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 0]
-S = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 1]
-V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
+# H = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 0]
+# S = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 1]
+# V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
 
-fig3, (axh, axs, axv) = plt.subplots(1, 3, figsize=(14, 4))
-axh.imshow(H, cmap='gray')
-axh.set_title('Kanał H')
-axs.imshow(S, cmap='gray')
-axs.set_title('Kanał S')
-axv.imshow(V, cmap='gray')
-axv.set_title('Kanał V')
+# fig3, (axh, axs, axv) = plt.subplots(1, 3, figsize=(14, 4))
+# axh.imshow(H, cmap='gray')
+# axh.set_title('Kanał H')
+# axs.imshow(S, cmap='gray')
+# axs.set_title('Kanał S')
+# axv.imshow(V, cmap='gray')
+# axv.set_title('Kanał V')
 
-fig3.tight_layout()
+# fig3.tight_layout()
 
 plt.show()
