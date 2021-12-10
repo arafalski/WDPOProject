@@ -13,7 +13,23 @@ def get_rects(contours):
     return rects
 
 
-img = cv2.imread('data/03.jpg', cv2.IMREAD_COLOR)
+def get_mean_color(img, mask):
+    imgf32 = img.copy().astype(np.float32)
+    B = imgf32[:, :, 0]
+    G = imgf32[:, :, 1]
+    R = imgf32[:, :, 2]
+    B[mask == 0] = np.nan
+    G[mask == 0] = np.nan
+    R[mask == 0] = np.nan
+
+    B_mean = np.nanmean(B)
+    G_mean = np.nanmean(G)
+    R_mean = np.nanmean(R)
+
+    img[:, :] = np.array([B_mean, G_mean, R_mean])
+
+
+img = cv2.imread('data/02.jpg', cv2.IMREAD_COLOR)
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
@@ -38,22 +54,30 @@ mask[mask != 0] = 255
 mask = cv2.morphologyEx(mask.astype(np.uint8),
                         cv2.MORPH_CLOSE, np.ones((65, 65), np.uint8))
 
-H = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 0]
-S = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 1]
-V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
-
-contours, hierarchy = cv2.findContours(mask.copy(),
-                                       cv2.RETR_EXTERNAL,
-                                       cv2.CHAIN_APPROX_SIMPLE)
+contours, _ = cv2.findContours(mask.copy(),
+                               cv2.RETR_EXTERNAL,
+                               cv2.CHAIN_APPROX_SIMPLE)
 print(f'Num of objects: {len(contours)}')
 
 img_color = img.copy()
-cv2.drawContours(img_color, contours, -1, (0, 255, 0), 10)
-
 rects = get_rects(contours)
+hs_for_classification = []
 for r in rects:
-    cv2.rectangle(img_color, r[0], r[1], (0, 0, 255), 10)
+    img_rect = img_color[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
+    mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
+    get_mean_color(img_rect, mask_rect)
 
+    img_rect_hsv = cv2.cvtColor(img_rect, cv2.COLOR_BGR2HSV)
+    H = int(np.mean(img_rect_hsv[:, :, 0]))
+    S = int(np.mean(img_rect_hsv[:, :, 1]))
+    hs_for_classification.append((H, S))
+    print(f'xmin = {r[0][0]}')
+    print(f'H = {H}')
+    print(f'S = {S}')
+    print()
+
+################################################################
+# images plotting
 fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
 ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 ax11.set_title('Oryginalne zdjęcie')
@@ -82,12 +106,18 @@ ax24.set_title('Suma masek')
 fig2.tight_layout()
 
 
-fig2, (axh, axs, axv) = plt.subplots(1, 3, figsize=(14, 4))
+H = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 0]
+S = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 1]
+V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
+
+fig3, (axh, axs, axv) = plt.subplots(1, 3, figsize=(14, 4))
 axh.imshow(H, cmap='gray')
 axh.set_title('Kanał H')
 axs.imshow(S, cmap='gray')
 axs.set_title('Kanał S')
 axv.imshow(V, cmap='gray')
 axv.set_title('Kanał V')
+
+fig3.tight_layout()
 
 plt.show()
