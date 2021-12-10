@@ -2,7 +2,18 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-img = cv2.imread('data/02.jpg', cv2.IMREAD_COLOR)
+
+def get_rects(contours):
+    rects = []
+    for cont in contours:
+        x = [p[0][0] for p in cont]
+        y = [p[0][1] for p in cont]
+        rects.append([(np.min(x), np.min(y)),
+                      (np.max(x), np.max(y))])
+    return rects
+
+
+img = cv2.imread('data/03.jpg', cv2.IMREAD_COLOR)
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
@@ -38,6 +49,10 @@ print(f'Num of objects: {len(contours)}')
 
 img_color = img.copy()
 cv2.drawContours(img_color, contours, -1, (0, 255, 0), 10)
+
+rects = get_rects(contours)
+for r in rects:
+    cv2.rectangle(img_color, r[0], r[1], (0, 0, 255), 10)
 
 fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
 ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
