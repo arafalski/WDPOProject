@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-img = cv2.imread('data/09.jpg', cv2.IMREAD_COLOR)
-# img_blur = cv2.medianBlur(img, 45)
+img = cv2.imread('data/02.jpg', cv2.IMREAD_COLOR)
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
@@ -35,10 +34,10 @@ V = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)[:, :, 2]
 contours, hierarchy = cv2.findContours(mask.copy(),
                                        cv2.RETR_EXTERNAL,
                                        cv2.CHAIN_APPROX_SIMPLE)
-print(f'Numbers of objects: {len(contours)}')
+print(f'Num of objects: {len(contours)}')
 
 img_color = img.copy()
-cv2.drawContours(img_color, contours, -1, (0, 255, 0), 8)
+cv2.drawContours(img_color, contours, -1, (0, 255, 0), 10)
 
 fig1, (ax11, ax12) = plt.subplots(1, 2, figsize=(10, 4))
 ax11.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
