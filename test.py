@@ -75,19 +75,18 @@ def classify(h, s):
     return Fruit.apple
 
 
-img = cv2.imread('data/02.jpg', cv2.IMREAD_COLOR)
+img = cv2.imread('data/00.jpg', cv2.IMREAD_COLOR)
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
 
 mask = generate_mask(img_hsv)
 
-contours, _ = cv2.findContours(mask.copy(),
+contours, _ = cv2.findContours(mask,
                                cv2.RETR_EXTERNAL,
                                cv2.CHAIN_APPROX_SIMPLE)
-print(f'Num of objects: {len(contours)}')
 
-img_color = img.copy()
+img_color = img_blur.copy()
 rects = get_rects(contours)
 fruits = []
 for (r, c) in zip(rects, contours):
