@@ -25,7 +25,7 @@ def generate_mask(img_hsv):
     mask2 = cv2.morphologyEx(mask2, cv2.MORPH_CLOSE,
                              np.ones((65, 65), np.uint8))
 
-    # reflections on apples
+    # glare on apples
     lower3 = np.array([150, 30, 50])
     upper3 = np.array([255, 150, 255])
     mask3 = cv2.inRange(img_hsv, lower3, upper3)
@@ -51,9 +51,7 @@ def get_rects(contours):
 
 def get_mean_color(img, mask):
     imgf32 = img.copy().astype(np.float32)
-    B = imgf32[:, :, 0]
-    G = imgf32[:, :, 1]
-    R = imgf32[:, :, 2]
+    B, G, R = cv2.split(imgf32)
     B[mask == 0] = np.nan
     G[mask == 0] = np.nan
     R[mask == 0] = np.nan
