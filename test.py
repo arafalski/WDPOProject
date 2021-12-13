@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from enum import Enum
+from tqdm import tqdm
 
 
 class Fruit(Enum):
@@ -87,27 +88,26 @@ contours, _ = cv2.findContours(mask,
 img_color = img_blur.copy()
 rects = get_rects(contours)
 fruits = []
-for (r, c) in zip(rects, contours):
-    img_rect = img_color[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
-    img_rect_copy = img_rect.copy()
+for (r, c) in tqdm(zip(rects, contours)):
+    img_rect = img_color[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1].copy()
 
-    for y in range(img_rect_copy.shape[0]):
-        for x in range(img_rect_copy.shape[1]):
+    for y in range(img_rect.shape[0]):
+        for x in range(img_rect.shape[1]):
             if cv2.pointPolygonTest(c, (x + int(r[0][0]), y + int(r[0][1])), False) == -1:
-                img_rect_copy[y, x] = 0
+                img_rect[y, x] = 0
 
     mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
-    get_mean_color(img_rect_copy, mask_rect)
+    get_mean_color(img_rect, mask_rect)
 
-    img_rect_hsv = cv2.cvtColor(img_rect_copy, cv2.COLOR_BGR2HSV)
+    img_rect_hsv = cv2.cvtColor(img_rect, cv2.COLOR_BGR2HSV)
     H = int(np.mean(img_rect_hsv[:, :, 0]))
     S = int(np.mean(img_rect_hsv[:, :, 1]))
     fruits.append(classify(H, S))
-    print(f'xmin = {r[0][0]}')
-    print(f'H = {H}')
-    print(f'S = {S}')
-    print(classify(H, S))
-    print()
+    # print(f'xmin = {r[0][0]}')
+    # print(f'H = {H}')
+    # print(f'S = {S}')
+    # print(classify(H, S))
+    # print()
 
 print(f'Num of apples: {fruits.count(Fruit.apple)}')
 print(f'Num of oranges: {fruits.count(Fruit.orange)}')
