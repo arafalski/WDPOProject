@@ -33,8 +33,7 @@ def generate_mask(img_hsv):
     mask = cv2.bitwise_or(mask1, mask2)
     mask = cv2.bitwise_or(mask, mask3)
 
-    mask = cv2.morphologyEx(mask.astype(np.uint8),
-                            cv2.MORPH_CLOSE, np.ones((65, 65), np.uint8))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((65, 65), np.uint8))
 
     return mask
 
@@ -88,7 +87,8 @@ img_color = img_blur.copy()
 rects = get_rects(contours)
 fruits = []
 for (r, c) in zip(rects, contours):
-    rect_mask = np.zeros((img_color.shape[0], img_color.shape[1]), dtype=np.uint8)
+    y, x = img_color.shape[0], img_color.shape[1]
+    rect_mask = np.zeros((y, x), dtype=np.uint8)
     cv2.fillPoly(rect_mask, [c], 255)
     img_rect = img_color.copy()
     img_rect[rect_mask == 0] = 0
