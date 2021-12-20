@@ -83,14 +83,13 @@ contours, _ = cv2.findContours(mask,
                                cv2.RETR_EXTERNAL,
                                cv2.CHAIN_APPROX_SIMPLE)
 
-img_color = img_blur.copy()
 rects = get_rects(contours)
 fruits = []
 for (r, c) in zip(rects, contours):
-    y, x = img_color.shape[0], img_color.shape[1]
+    y, x = img_blur.shape[0], img_blur.shape[1]
     rect_mask = np.zeros((y, x), dtype=np.uint8)
     cv2.fillPoly(rect_mask, [c], 255)
-    img_rect = img_color.copy()
+    img_rect = img_blur.copy()
     img_rect[rect_mask == 0] = 0
     img_rect = img_rect[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
 
