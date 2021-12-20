@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from enum import Enum
-from tqdm import tqdm
 
 
 class Fruit(Enum):
@@ -88,13 +87,12 @@ contours, _ = cv2.findContours(mask,
 img_color = img_blur.copy()
 rects = get_rects(contours)
 fruits = []
-for (r, c) in tqdm(zip(rects, contours)):
-    img_rect = img_color[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1].copy()
-
-    for y in range(img_rect.shape[0]):
-        for x in range(img_rect.shape[1]):
-            if cv2.pointPolygonTest(c, (x + int(r[0][0]), y + int(r[0][1])), False) == -1:
-                img_rect[y, x] = 0
+for (r, c) in zip(rects, contours):
+    rect_mask = np.zeros((img_color.shape[0], img_color.shape[1]), dtype=np.uint8)
+    cv2.fillPoly(rect_mask, [c], 255)
+    img_rect = img_color.copy()
+    img_rect[rect_mask == 0] = 0
+    img_rect = img_rect[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
 
     mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
     get_mean_color(img_rect, mask_rect)
