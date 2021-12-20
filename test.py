@@ -55,11 +55,11 @@ def get_mean_color(img, mask):
     G[mask == 0] = np.nan
     R[mask == 0] = np.nan
 
-    B_mean = np.nanmean(B)
-    G_mean = np.nanmean(G)
-    R_mean = np.nanmean(R)
+    B_mean = int(np.nanmean(B))
+    G_mean = int(np.nanmean(G))
+    R_mean = int(np.nanmean(R))
 
-    img[:, :] = np.array([B_mean, G_mean, R_mean])
+    return np.array([[[B_mean, G_mean, R_mean]]], dtype=np.uint8)
 
 
 def classify(h, s):
@@ -95,12 +95,12 @@ for (r, c) in zip(rects, contours):
     img_rect = img_rect[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
 
     mask_rect = mask[r[0][1]:r[1][1] + 1, r[0][0]:r[1][0] + 1]
-    get_mean_color(img_rect, mask_rect)
+    mean_color = get_mean_color(img_rect, mask_rect)
 
-    img_rect_hsv = cv2.cvtColor(img_rect, cv2.COLOR_BGR2HSV)
-    H = int(np.mean(img_rect_hsv[:, :, 0]))
-    S = int(np.mean(img_rect_hsv[:, :, 1]))
-    fruits.append(classify(H, S))
+    mean_color_hsv = cv2.cvtColor(mean_color, cv2.COLOR_BGR2HSV)
+    h, s, _ = cv2.split(mean_color_hsv)
+
+    fruits.append(classify(h, s))
     # print(f'xmin = {r[0][0]}')
     # print(f'H = {H}')
     # print(f'S = {S}')
