@@ -16,14 +16,14 @@ def generate_mask(img_hsv):
     upper = np.array([110, 255, 255])
     mask1 = cv2.inRange(img_hsv, lower, upper)
     mask1 = cv2.morphologyEx(mask1, cv2.MORPH_CLOSE,
-                             np.ones((51, 51), np.uint8))
+                             np.ones((51, 51), dtype=np.uint8))
 
     # apples
     lower2 = np.array([0, 30, 5])
     upper2 = np.array([8, 255, 255])
     mask2 = cv2.inRange(img_hsv, lower2, upper2)
     mask2 = cv2.morphologyEx(mask2, cv2.MORPH_CLOSE,
-                             np.ones((65, 65), np.uint8))
+                             np.ones((65, 65), dtype=np.uint8))
 
     # glare on apples
     lower3 = np.array([150, 30, 50])
@@ -33,7 +33,8 @@ def generate_mask(img_hsv):
     mask = cv2.bitwise_or(mask1, mask2)
     mask = cv2.bitwise_or(mask, mask3)
 
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((65, 65), np.uint8))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE,
+                            np.ones((65, 65), dtype=np.uint8))
 
     return mask
 
