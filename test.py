@@ -74,6 +74,7 @@ def classify(h, s):
 
 
 img = cv2.imread('data/00.jpg', cv2.IMREAD_COLOR)
+img = cv2.resize(img, dsize=(3000, 4000))
 img_blur = cv2.GaussianBlur(img, (55, 55), 0)
 
 img_hsv = cv2.cvtColor(img_blur, cv2.COLOR_BGR2HSV)
