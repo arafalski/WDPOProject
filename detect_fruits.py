@@ -106,6 +106,8 @@ def detect_fruits(img_path: str) -> Dict[str, int]:
     rects = get_rects(contours)
     fruits = []
     for (r, c) in zip(rects, contours):
+        if cv2.contourArea(c) < 20000:
+            continue
         y, x = img_blur.shape[0], img_blur.shape[1]
         rect_mask = np.zeros((y, x), dtype=np.uint8)
         cv2.fillPoly(rect_mask, [c], 255)
